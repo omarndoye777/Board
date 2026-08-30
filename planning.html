@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Planning - Life Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#6366f1",
+              dark: {
+                bg: "#0f172a",
+                card: "#1e293b",
+                border: "#334155",
+                text: "#f8fafc",
+                muted: "#94a3b8",
+              },
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-dark-bg text-dark-text min-h-screen flex">
+    <aside
+      class="w-64 bg-dark-card border-r border-dark-border flex flex-col fixed h-full"
+    >
+      <div class="p-6 border-b border-dark-border">
+        <h1
+          class="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent"
+        >
+          Life Dashboard
+        </h1>
+      </div>
+
+      <nav class="flex-1 p-4 space-y-2">
+        <a
+          href="dashboard.html"
+          class="flex items-center gap-3 px-4 py-3 text-dark-muted hover:bg-dark-bg hover:text-white rounded-lg transition-colors"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+            ></path>
+          </svg>
+          Aujourd'hui
+        </a>
+        <a
+          href="journal.html"
+          class="flex items-center gap-3 px-4 py-3 text-dark-muted hover:bg-dark-bg hover:text-white rounded-lg transition-colors"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+            ></path>
+          </svg>
+          Journal
+        </a>
+        <a
+          href="sport.html"
+          class="flex items-center gap-3 px-4 py-3 text-dark-muted hover:bg-dark-bg hover:text-white rounded-lg transition-colors"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 10V3L4 14h7v7l9-11h-7z"
+            ></path>
+          </svg>
+          Sport
+        </a>
+        <a
+          href="planning.html"
+          class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary rounded-lg font-medium"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+            ></path>
+          </svg>
+          Planning
+        </a>
+      </nav>
+
+      <div class="p-4 border-t border-dark-border">
+        <div class="flex items-center gap-3 mb-4">
+          <div
+            class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold"
+            id="user-avatar"
+          >
+            ?
+          </div>
+          <div>
+            <p class="text-sm font-medium" id="user-name">Chargement...</p>
+            <p class="text-xs text-dark-muted" id="user-email">...</p>
+          </div>
+        </div>
+        <button
+          id="logout-btn"
+          class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-dark-bg hover:bg-red-500/10 hover:text-red-400 text-dark-muted rounded-lg transition-colors text-sm"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+            ></path>
+          </svg>
+          Déconnexion
+        </button>
+      </div>
+    </aside>
+
+    <main class="flex-1 ml-64 p-8">
+      <header class="flex justify-between items-center mb-8">
+        <div>
+          <h2 class="text-3xl font-bold mb-1">Mon Planning 📅</h2>
+          <p class="text-dark-muted">Organise ton emploi du temps.</p>
+        </div>
+        <button
+          id="new-event-btn"
+          class="bg-primary hover:bg-indigo-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center gap-2"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            ></path>
+          </svg>
+          Nouvel événement
+        </button>
+      </header>
+
+      <div class="bg-dark-card border border-dark-border rounded-xl p-6 mb-8">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-xl font-bold" id="current-month">Mois Année</h3>
+          <div class="flex gap-2">
+            <button class="p-2 hover:bg-dark-bg rounded-lg">‹</button>
+            <button class="p-2 hover:bg-dark-bg rounded-lg">›</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-7 gap-2 mb-2">
+          <div class="text-center text-sm text-dark-muted py-2">Lun</div>
+          <div class="text-center text-sm text-dark-muted py-2">Mar</div>
+          <div class="text-center text-sm text-dark-muted py-2">Mer</div>
+          <div class="text-center text-sm text-dark-muted py-2">Jeu</div>
+          <div class="text-center text-sm text-dark-muted py-2">Ven</div>
+          <div class="text-center text-sm text-dark-muted py-2">Sam</div>
+          <div class="text-center text-sm text-dark-muted py-2">Dim</div>
+        </div>
+
+        <div id="calendar-grid" class="grid grid-cols-7 gap-2">
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-semibold mb-4">Événements à venir</h3>
+        <div id="events-list" class="space-y-3">
+          <div class="text-center py-8 text-dark-muted">
+            <p>Aucun événement pour le moment</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div
+      id="event-modal"
+      class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4"
+    >
+      <div
+        class="bg-dark-card border border-dark-border rounded-2xl w-full max-w-lg"
+      >
+        <div
+          class="p-6 border-b border-dark-border flex justify-between items-center"
+        >
+          <h3 class="text-xl font-bold">Nouvel événement</h3>
+          <button id="close-modal" class="text-dark-muted hover:text-white">
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
+            </svg>
+          </button>
+        </div>
+
+        <form id="event-form" class="p-6 space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-1"
+              >Titre</label
+            >
+            <input
+              type="text"
+              id="event-title"
+              class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 focus:outline-none focus:border-primary"
+              placeholder="Ex: Réunion, Sport..."
+              required
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-1"
+                >Date</label
+              >
+              <input
+                type="date"
+                id="event-date"
+                class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 focus:outline-none focus:border-primary"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-1"
+                >Heure</label
+              >
+              <input
+                type="time"
+                id="event-time"
+                class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 focus:outline-none focus:border-primary"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-1"
+              >Catégorie</label
+            >
+            <select
+              id="event-category"
+              class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 focus:outline-none focus:border-primary"
+            >
+              <option value="personnel">Personnel</option>
+              <option value="travail">Travail</option>
+              <option value="sport">Sport</option>
+              <option value="sante">Santé</option>
+            </select>
+          </div>
+
+          <div class="flex justify-end gap-3 pt-4">
+            <button
+              type="button"
+              id="cancel-btn"
+              class="px-4 py-2 text-dark-muted hover:text-white transition-colors"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              class="bg-primary hover:bg-indigo-600 text-white font-medium py-2 px-6 rounded-lg transition-colors"
+            >
+              Enregistrer
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const SUPABASE_URL = "https://nmycrlkzunqhknjsnnrd.supabase.co"; 
+      const SUPABASE_ANON_KEY =
+        "sb_publishable_stM5nGMVAfh8BkUh2wft8w_2jpixnRk"; 
+
+      const supabaseClient = supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY,
+      );
+      let currentUser = null;
+      let allEvents = [];
+      let currentCalendarDate = new Date();
+
+      const categoryColors = {
+        personnel: "#3b82f6",
+        travail: "#8b5cf6",
+        sport: "#10b981",
+        sante: "#ef4444",
+      };
+
+      window.addEventListener("DOMContentLoaded", async () => {
+        console.log("🚀 Planning.html chargé");
+
+        const {
+          data: { session },
+        } = await supabaseClient.auth.getSession();
+
+        if (!session) {
+          window.location.href = "login.html?redirect=planning.html";
+          return;
+        }
+
+        currentUser = session.user;
+        await loadUserProfile();
+        await loadEvents();
+        attachEventListeners();
+        renderCalendar();
+        console.log("✅ Planning prêt");
+      });
+
+      async function loadUserProfile() {
+        const { data: profile } = await supabaseClient
+          .from("profiles")
+          .select("full_name")
+          .eq("id", currentUser.id)
+          .single();
+
+        const name = profile?.full_name || currentUser.email.split("@")[0];
+        document.getElementById("user-name").textContent = name;
+        document.getElementById("user-email").textContent = currentUser.email;
+        document.getElementById("user-avatar").textContent = name
+          .charAt(0)
+          .toUpperCase();
+      }
+
+      async function loadEvents() {
+        const { data, error } = await supabaseClient
+          .from("planning_events")
+          .select("*")
+          .eq("user_id", currentUser.id)
+          .order("event_date", { ascending: true });
+
+        if (error) {
+          console.error("Erreur chargement:", error);
+          return;
+        }
+
+        allEvents = data;
+        renderEventsList();
+      }
+
+      function renderCalendar() {
+        const year = currentCalendarDate.getFullYear();
+        const month = currentCalendarDate.getMonth();
+
+        const monthNames = [
+          "Janvier",
+          "Février",
+          "Mars",
+          "Avril",
+          "Mai",
+          "Juin",
+          "Juillet",
+          "Août",
+          "Septembre",
+          "Octobre",
+          "Novembre",
+          "Décembre",
+        ];
+        document.getElementById("current-month").textContent =
+          `${monthNames[month]} ${year}`;
+
+        const grid = document.getElementById("calendar-grid");
+        grid.innerHTML = "";
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const startDay = firstDay === 0 ? 6 : firstDay - 1;
+
+        for (let i = 0; i < startDay; i++) {
+          const emptyCell = document.createElement("div");
+          emptyCell.className = "h-24 bg-dark-bg/50 rounded-lg";
+          grid.appendChild(emptyCell);
+        }
+
+        const today = new Date();
+        for (let day = 1; day <= daysInMonth; day++) {
+          const cell = document.createElement("div");
+          const isToday =
+            day === today.getDate() &&
+            month === today.getMonth() &&
+            year === today.getFullYear();
+
+          cell.className = `h-24 bg-dark-bg border ${isToday ? "border-primary bg-primary/10" : "border-dark-border"} rounded-lg p-2 relative cursor-pointer hover:border-primary/50 transition-colors`;
+
+          const dayNumber = document.createElement("div");
+          dayNumber.className = `text-sm font-medium ${isToday ? "text-primary" : "text-slate-300"}`;
+          dayNumber.textContent = day;
+          cell.appendChild(dayNumber);
+
+          const dateString = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+          const dayEvents = allEvents.filter(
+            (e) => e.event_date === dateString,
+          );
+
+          dayEvents.slice(0, 2).forEach((event) => {
+            const dot = document.createElement("div");
+            dot.className = "text-xs truncate mt-1 px-1 rounded text-white";
+            dot.style.backgroundColor =
+              categoryColors[event.category] || "#6366f1";
+            dot.textContent = event.title;
+            cell.appendChild(dot);
+          });
+
+          if (dayEvents.length > 2) {
+            const more = document.createElement("div");
+            more.className = "text-xs text-dark-muted mt-1";
+            more.textContent = `+${dayEvents.length - 2}`;
+            cell.appendChild(more);
+          }
+
+          cell.addEventListener("click", () => openModal(null, dateString));
+          grid.appendChild(cell);
+        }
+      }
+
+      function renderEventsList() {
+        const list = document.getElementById("events-list");
+        const sortedEvents = [...allEvents].sort(
+          (a, b) => new Date(a.event_date) - new Date(b.event_date),
+        );
+        const todayStr = new Date().toISOString().split("T")[0];
+        const upcomingEvents = sortedEvents
+          .filter((e) => e.event_date >= todayStr)
+          .slice(0, 5);
+
+        if (upcomingEvents.length === 0) {
+          list.innerHTML = `<div class="text-center py-8 text-dark-muted"><p>Aucun événement à venir</p></div>`;
+          return;
+        }
+
+        list.innerHTML = upcomingEvents
+          .map((event) => {
+            const date = new Date(event.event_date).toLocaleDateString(
+              "fr-FR",
+              { weekday: "short", day: "numeric", month: "short" },
+            );
+            const color = categoryColors[event.category] || "#6366f1";
+            const time = event.start_time ? `à ${event.start_time}` : "";
+
+            return `
+        <div class="bg-dark-card border border-dark-border rounded-lg p-4 flex items-center gap-4 group cursor-pointer hover:border-primary/50 transition-colors" data-id="${event.id}">
+          <div class="w-1 h-12 rounded-full" style="background-color: ${color}"></div>
+          <div class="flex-1">
+            <h4 class="font-semibold">${event.title}</h4>
+            <p class="text-sm text-dark-muted capitalize">${date} ${time} • ${event.category}</p>
+          </div>
+        </div>
+      `;
+          })
+          .join("");
+
+        list.querySelectorAll("[data-id]").forEach((item) => {
+          item.addEventListener("click", () => openModal(item.dataset.id));
+        });
+      }
+
+      function attachEventListeners() {
+        document
+          .getElementById("new-event-btn")
+          .addEventListener("click", () => openModal());
+        document
+          .getElementById("close-modal")
+          .addEventListener("click", closeModal);
+        document
+          .getElementById("cancel-btn")
+          .addEventListener("click", closeModal);
+        document
+          .getElementById("logout-btn")
+          .addEventListener("click", async () => {
+            await supabaseClient.auth.signOut();
+            window.location.href = "login.html";
+          });
+
+        const allButtons = document.querySelectorAll("main button");
+        const prevBtn = Array.from(allButtons).find(
+          (b) => b.textContent.trim() === "‹",
+        );
+        const nextBtn = Array.from(allButtons).find(
+          (b) => b.textContent.trim() === "›",
+        );
+
+        if (prevBtn) {
+          prevBtn.addEventListener("click", () => {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+            renderCalendar();
+          });
+        }
+        if (nextBtn) {
+          nextBtn.addEventListener("click", () => {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+            renderCalendar();
+          });
+        }
+
+        document
+          .getElementById("event-form")
+          .addEventListener("submit", saveEvent);
+      }
+
+      function openModal(eventId = null, prefillDate = null) {
+        const modal = document.getElementById("event-modal");
+        const form = document.getElementById("event-form");
+
+        form.reset();
+        const dateToSet = prefillDate || new Date().toISOString().split("T")[0];
+        document.getElementById("event-date").value = dateToSet;
+
+        if (eventId) {
+          const event = allEvents.find((e) => e.id === eventId);
+          if (event) {
+            document.getElementById("event-title").value = event.title;
+            document.getElementById("event-date").value = event.event_date;
+            document.getElementById("event-time").value =
+              event.start_time || "";
+            document.getElementById("event-category").value = event.category;
+          }
+        }
+
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      }
+
+      function closeModal() {
+        const modal = document.getElementById("event-modal");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
+
+      async function saveEvent(e) {
+        e.preventDefault();
+        console.log("💾 Sauvegarde événement...");
+
+        const title = document.getElementById("event-title").value;
+        const eventDate = document.getElementById("event-date").value;
+        const startTime = document.getElementById("event-time").value;
+        const category = document.getElementById("event-category").value;
+
+        const eventData = {
+          user_id: currentUser.id,
+          title,
+          event_date: eventDate,
+          start_time: startTime || null,
+          category,
+        };
+
+        const { error } = await supabaseClient
+          .from("planning_events")
+          .insert(eventData);
+
+        if (error) {
+          console.error("Erreur Supabase:", error);
+          alert("Erreur: " + error.message);
+        } else {
+          console.log("✅ Événement enregistré");
+          closeModal();
+          await loadEvents();
+          renderCalendar();
+        }
+      }
+    </script>
+  </body>
+</html>

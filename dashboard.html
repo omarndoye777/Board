@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Life Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6366f1',
+            dark: {
+              bg: '#0f172a',
+              card: '#1e293b',
+              border: '#334155',
+              text: '#f8fafc',
+              muted: '#94a3b8'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-dark-bg text-dark-text min-h-screen flex">
+  
+
+  <aside class="w-64 bg-dark-card border-r border-dark-border flex flex-col fixed h-full">
+    <div class="p-6 border-b border-dark-border">
+      <h1 class="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+        Life Dashboard
+      </h1>
+    </div>
+
+    <nav class="flex-1 p-4 space-y-2">
+      <a href="#" class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary rounded-lg font-medium">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+        Aujourd'hui
+      </a>
+      <a href="journal.html" class="flex items-center gap-3 px-4 py-3 text-dark-muted hover:bg-dark-bg hover:text-white rounded-lg transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+        Journal
+      </a>
+      <a href="sport.html" class="flex items-center gap-3 px-4 py-3 text-dark-muted hover:bg-dark-bg hover:text-white rounded-lg transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        Sport
+      </a>
+      <a href="planning.html" class="flex items-center gap-3 px-4 py-3 text-dark-muted hover:bg-dark-bg hover:text-white rounded-lg transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        Planning
+      </a>
+    </nav>
+
+    <div class="p-4 border-t border-dark-border">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold" id="user-avatar">
+          ?
+        </div>
+        <div>
+          <p class="text-sm font-medium" id="user-name">Chargement...</p>
+          <p class="text-xs text-dark-muted" id="user-email">...</p>
+        </div>
+      </div>
+      <button 
+        id="logout-btn"
+        class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-dark-bg hover:bg-red-500/10 hover:text-red-400 text-dark-muted rounded-lg transition-colors text-sm"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        Déconnexion
+      </button>
+    </div>
+  </aside>
+
+
+  <main class="flex-1 ml-64 p-8">
+    
+    <header class="mb-8">
+      <h2 class="text-3xl font-bold mb-2">Bonjour, <span id="welcome-name">...</span> 👋</h2>
+      <p class="text-dark-muted" id="current-date">Chargement de la date...</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      <div class="bg-dark-card border border-dark-border rounded-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-lg">🔥 Ta série (Streak)</h3>
+          <span class="text-xs text-dark-muted bg-dark-bg px-2 py-1 rounded">Cette semaine</span>
+        </div>
+        <div class="text-4xl font-bold text-primary mb-2">0 jours</div>
+        <p class="text-sm text-dark-muted">Continue comme ça pour battre ton record !</p>
+      </div>
+
+      <div class="bg-dark-card border border-dark-border rounded-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-lg">📅 Aujourd'hui</h3>
+          <button class="text-xs text-primary hover:underline">Voir tout</button>
+        </div>
+        <div id="today-events" class="space-y-3">
+          <p class="text-sm text-dark-muted italic">Aucun événement prévu.</p>
+        </div>
+      </div>
+
+      <div class="bg-dark-card border border-dark-border rounded-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-lg">🏋️ Entraînement</h3>
+          <button class="text-xs text-primary hover:underline">Historique</button>
+        </div>
+        <div class="text-center py-4">
+          <div class="w-16 h-16 mx-auto bg-green-500/10 rounded-full flex items-center justify-center mb-3">
+            <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+          </div>
+          <p class="font-medium">Repos ou Cardio léger</p>
+          <p class="text-sm text-dark-muted mt-1">30 min de marche recommandée</p>
+        </div>
+      </div>
+
+      <div class="bg-dark-card border border-dark-border rounded-xl p-6 md:col-span-2 lg:col-span-3">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-lg">📓 Pensée du jour</h3>
+          <span class="text-xs text-dark-muted">Enregistre rapidement une idée</span>
+        </div>
+        <textarea 
+          id="quick-journal"
+          class="w-full bg-dark-bg border border-dark-border rounded-lg p-4 text-sm focus:outline-none focus:border-primary resize-none h-24"
+          placeholder="Qu'est-ce qui te préoccupe ou t'inspire aujourd'hui ?"
+        ></textarea>
+        <div class="flex justify-end mt-3">
+          <button 
+            id="save-journal-btn"
+            class="bg-primary hover:bg-indigo-600 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors"
+          >
+            Enregistrer
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+
+    const SUPABASE_URL = 'https://nmycrlkzunqhknjsnnrd.supabase.co' 
+    const SUPABASE_ANON_KEY = 'sb_publishable_stM5nGMVAfh8BkUh2wft8w_2jpixnRk' 
+    
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+    async function checkSession() {
+      const { data: { session } } = await supabaseClient.auth.getSession()
+      
+      if (!session) {
+        window.location.href = 'login.html'
+      } else {
+        loadUserProfile(session.user)
+      }
+    }
+
+
+    async function loadUserProfile(user) {
+      const { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single()
+
+      const name = profile?.full_name || user.email.split('@')[0]
+      const initial = name.charAt(0).toUpperCase()
+
+      document.getElementById('user-name').textContent = name
+      document.getElementById('user-email').textContent = user.email
+      document.getElementById('user-avatar').textContent = initial
+      document.getElementById('welcome-name').textContent = name.split(' ')[0]       
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+      document.getElementById('current-date').textContent = new Date().toLocaleDateString('fr-FR', options)
+    }
+
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await supabaseClient.auth.signOut()
+      window.location.href = 'login.html'
+    })
+
+    document.getElementById('save-journal-btn').addEventListener('click', async () => {
+      const content = document.getElementById('quick-journal').value
+      if (!content.trim()) return
+
+      const btn = document.getElementById('save-journal-btn')
+      btn.textContent = 'Sauvegarde...'
+      btn.disabled = true
+
+      const { data: { user } } = await supabaseClient.auth.getUser()
+
+      const { error } = await supabaseClient
+        .from('journal_entries')
+        .insert({
+          user_id: user.id,
+          content: content,
+          mood: '😐'
+        })
+
+      if (error) {
+        alert('Erreur: ' + error.message)
+      } else {
+        document.getElementById('quick-journal').value = ''
+        btn.textContent = 'Enregistré ! ✅'
+        setTimeout(() => {
+          btn.textContent = 'Enregistrer'
+          btn.disabled = false
+        }, 2000)
+      }
+    })
+
+    checkSession()
+  </script>
+</body>
+</html>

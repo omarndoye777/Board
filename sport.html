@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sport - Life Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6366f1',
+            dark: {
+              bg: '#0f172a',
+              card: '#1e293b',
+              border: '#334155',
+              text: '#f8fafc',
+              muted: '#94a3b8'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-dark-bg text-dark-text min-h-screen flex">
+  
+  <aside class="w-64 bg-dark-card border-r border-dark-border flex flex-col fixed h-full">
+    <div class="p-6 border-b border-dark-border">
+      <h1 class="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+        Life Dashboard
+      </h1>
+    </div>
+
+    <nav class="flex-1 p-4 space-y-2">
+      <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-dark-muted hover:bg-dark-bg hover:text-white rounded-lg transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+        Aujourd'hui
+      </a>
+      <a href="journal.html" class="flex items-center gap-3 px-4 py-3 text-dark-muted hover:bg-dark-bg hover:text-white rounded-lg transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+        Journal
+      </a>
+      <a href="sport.html" class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary rounded-lg font-medium">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        Sport
+      </a>
+      <a href="#" class="flex items-center gap-3 px-4 py-3 text-dark-muted hover:bg-dark-bg hover:text-white rounded-lg transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        Planning
+      </a>
+    </nav>
+
+    <div class="p-4 border-t border-dark-border">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold" id="user-avatar">?</div>
+        <div>
+          <p class="text-sm font-medium" id="user-name">Chargement...</p>
+          <p class="text-xs text-dark-muted" id="user-email">...</p>
+        </div>
+      </div>
+      <button id="logout-btn" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-dark-bg hover:bg-red-500/10 hover:text-red-400 text-dark-muted rounded-lg transition-colors text-sm">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        Déconnexion
+      </button>
+    </div>
+  </aside>
+
+  <main class="flex-1 ml-64 p-8">
+    <header class="flex justify-between items-center mb-8">
+      <div>
+        <h2 class="text-3xl font-bold mb-1">Mon Sport ️</h2>
+        <p class="text-dark-muted">Suis tes entraînements et ta progression.</p>
+      </div>
+      <button id="new-session-btn" class="bg-primary hover:bg-indigo-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        Nouvelle séance
+      </button>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="bg-dark-card border border-dark-border rounded-xl p-6">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-sm font-medium text-dark-muted">Séances ce mois</h3>
+          <span class="text-2xl">📊</span>
+        </div>
+        <p class="text-3xl font-bold text-primary" id="stat-sessions">0</p>
+      </div>
+      <div class="bg-dark-card border border-dark-border rounded-xl p-6">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-sm font-medium text-dark-muted">Temps total</h3>
+          <span class="text-2xl">⏱️</span>
+        </div>
+        <p class="text-3xl font-bold text-green-400" id="stat-duration">0 min</p>
+      </div>
+      <div class="bg-dark-card border border-dark-border rounded-xl p-6">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-sm font-medium text-dark-muted">Intensité moyenne</h3>
+          <span class="text-2xl">🔥</span>
+        </div>
+        <p class="text-3xl font-bold text-orange-400" id="stat-intensity">0/5</p>
+      </div>
+    </div>
+
+    <div class="flex gap-2 mb-6 flex-wrap">
+      <button class="filter-btn active bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium" data-filter="all">Toutes</button>
+      <button class="filter-btn bg-dark-card border border-dark-border text-dark-muted hover:text-white px-4 py-2 rounded-lg text-sm font-medium" data-filter="musculation">Musculation</button>
+      <button class="filter-btn bg-dark-card border border-dark-border text-dark-muted hover:text-white px-4 py-2 rounded-lg text-sm font-medium" data-filter="cardio">Cardio</button>
+      <button class="filter-btn bg-dark-card border border-dark-border text-dark-muted hover:text-white px-4 py-2 rounded-lg text-sm font-medium" data-filter="yoga">Yoga</button>
+      <button class="filter-btn bg-dark-card border border-dark-border text-dark-muted hover:text-white px-4 py-2 rounded-lg text-sm font-medium" data-filter="course">Course</button>
+    </div>
+
+    <div id="sessions-container" class="space-y-4">
+      <div class="text-center py-12 text-dark-muted">
+        <p>Chargement...</p>
+      </div>
+    </div>
+  </main>
+
+  <div id="session-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-dark-card border border-dark-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div class="p-6 border-b border-dark-border flex justify-between items-center">
+        <h3 class="text-xl font-bold" id="modal-title">Nouvelle séance</h3>
+        <button id="close-modal" class="text-dark-muted hover:text-white">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      
+      <form id="session-form" class="p-6 space-y-4">
+        <input type="hidden" id="session-id">
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-1">Type d'entraînement</label>
+            <select id="session-type" class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 focus:outline-none focus:border-primary">
+              <option value="musculation">Musculation</option>
+              <option value="cardio">Cardio</option>
+              <option value="yoga">Yoga</option>
+              <option value="course">Course à pied</option>
+              <option value="velo">Vélo</option>
+              <option value="natation">Natation</option>
+              <option value="autre">Autre</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-1">Date</label>
+            <input type="date" id="session-date" class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 focus:outline-none focus:border-primary">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-1">Durée (minutes)</label>
+            <input type="number" id="session-duration" min="1" class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 focus:outline-none focus:border-primary" placeholder="45">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-1">Intensité (1-5)</label>
+            <div class="flex gap-2">
+              <button type="button" class="intensity-btn text-xl p-2 rounded-lg border border-transparent hover:bg-dark-bg" data-intensity="1">1</button>
+              <button type="button" class="intensity-btn text-xl p-2 rounded-lg border border-transparent hover:bg-dark-bg" data-intensity="2">2</button>
+              <button type="button" class="intensity-btn text-xl p-2 rounded-lg border border-transparent hover:bg-dark-bg" data-intensity="3">3</button>
+              <button type="button" class="intensity-btn text-xl p-2 rounded-lg border border-transparent hover:bg-dark-bg" data-intensity="4">4</button>
+              <button type="button" class="intensity-btn text-xl p-2 rounded-lg border border-transparent hover:bg-dark-bg" data-intensity="5">5</button>
+            </div>
+            <input type="hidden" id="session-intensity" value="3">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-1">Notes</label>
+          <textarea id="session-notes" rows="3" class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 focus:outline-none focus:border-primary resize-none" placeholder="Comment s'est passée la séance ?"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-2">Exercices</label>
+          <div id="exercises-list" class="space-y-2 mb-3">
+          </div>
+          <button type="button" id="add-exercise-btn" class="text-sm text-primary hover:underline flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            Ajouter un exercice
+          </button>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-4 border-t border-dark-border">
+          <button type="button" id="delete-session-btn" class="hidden text-red-400 hover:bg-red-400/10 px-4 py-2 rounded-lg transition-colors">Supprimer</button>
+          <div class="flex-1"></div>
+          <button type="button" id="cancel-btn" class="px-4 py-2 text-dark-muted hover:text-white transition-colors">Annuler</button>
+          <button type="submit" class="bg-primary hover:bg-indigo-600 text-white font-medium py-2 px-6 rounded-lg transition-colors">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://nmycrlkzunqhknjsnnrd.supabase.co' 
+    const SUPABASE_ANON_KEY = 'sb_publishable_stM5nGMVAfh8BkUh2wft8w_2jpixnRk' 
+    
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    let currentUser = null;
+    let allSessions = [];
+    let currentFilter = 'all';
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      console.log('🚀 Sport.html chargé')
+      
+      const { data: { session } } = await supabaseClient.auth.getSession()
+      
+      if (!session) {
+        window.location.href = 'login.html?redirect=sport.html'
+        return;
+      }
+      
+      currentUser = session.user;
+      await loadUserProfile();
+      await loadSessions();
+      attachEventListeners();
+      console.log('✅ Sport prêt')
+    });
+
+    async function loadUserProfile() {
+      const { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('full_name')
+        .eq('id', currentUser.id)
+        .single()
+
+      const name = profile?.full_name || currentUser.email.split('@')[0]
+      document.getElementById('user-name').textContent = name
+      document.getElementById('user-email').textContent = currentUser.email
+      document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase()
+    }
+
+    async function loadSessions() {
+      const { data, error } = await supabaseClient
+        .from('sport_sessions')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('session_date', { ascending: false })
+
+      if (error) {
+        console.error('Erreur chargement:', error)
+        return;
+      }
+
+      allSessions = data;
+      updateStats();
+      renderSessions();
+    }
+
+    function updateStats() {
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      
+      const sessionsThisMonth = allSessions.filter(s => {
+        const date = new Date(s.session_date);
+        return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+      });
+      
+      const totalSessions = sessionsThisMonth.length;
+      const totalDuration = sessionsThisMonth.reduce((sum, s) => sum + (s.duration_minutes || 0), 0);
+      const avgIntensity = totalSessions > 0 
+        ? (sessionsThisMonth.reduce((sum, s) => sum + (s.intensity || 0), 0) / totalSessions).toFixed(1)
+        : 0;
+      
+      document.getElementById('stat-sessions').textContent = totalSessions;
+      document.getElementById('stat-duration').textContent = totalDuration + ' min';
+      document.getElementById('stat-intensity').textContent = avgIntensity + '/5';
+    }
+
+    function renderSessions() {
+      const container = document.getElementById('sessions-container');
+      
+      const filtered = currentFilter === 'all' 
+        ? allSessions 
+        : allSessions.filter(s => s.type === currentFilter);
+      
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="text-center py-12 text-dark-muted"><p>Aucune séance trouvée. Clique sur "Nouvelle séance" !</p></div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(session => {
+        const date = new Date(session.session_date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        const intensityStars = '🔥'.repeat(session.intensity || 0) + ''.repeat(5 - (session.intensity || 0));
+        const exercises = session.exercises || [];
+        const exercisesHtml = exercises.length > 0 
+          ? `<div class="mt-3 pt-3 border-t border-dark-border"><p class="text-xs text-dark-muted mb-2">${exercises.length} exercice(s) :</p><div class="space-y-1">${exercises.map(ex => `<div class="text-sm text-slate-300">• <strong>${ex.name}</strong> - ${ex.sets ? ex.sets.length : 0} série(s)</div>`).join('')}</div></div>`
+          : '';
+
+        return `
+          <div class="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-primary/50 transition-colors cursor-pointer session-card group relative" data-id="${session.id}">
+            <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-xs bg-primary text-white px-3 py-1 rounded-full">✏️ Modifier</span>
+            </div>
+            <div class="flex justify-between items-start mb-3 pr-20">
+              <div>
+                <div class="flex items-center gap-3 mb-1">
+                  <h3 class="font-semibold text-lg capitalize">${session.type}</h3>
+                  <span class="text-xs bg-dark-bg px-2 py-1 rounded text-dark-muted">${session.duration_minutes || 0} min</span>
+                </div>
+                <p class="text-sm text-dark-muted capitalize">${date}</p>
+              </div>
+              <div class="text-xl" title="Intensité">${intensityStars}</div>
+            </div>
+            ${session.notes ? `<p class="text-slate-300 text-sm mb-2">${session.notes}</p>` : ''}
+            ${exercisesHtml}
+          </div>
+        `;
+      }).join('');
+
+      document.querySelectorAll('.session-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const id = card.dataset.id;
+          if (id) openModal(id);
+        });
+      });
+    }
+
+    function attachEventListeners() {
+      document.getElementById('new-session-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal();
+      });
+
+      document.getElementById('logout-btn').addEventListener('click', async () => {
+        await supabaseClient.auth.signOut();
+        window.location.href = 'login.html';
+      });
+
+      document.getElementById('close-modal').addEventListener('click', closeModal);
+      document.getElementById('cancel-btn').addEventListener('click', closeModal);
+      document.getElementById('delete-session-btn').addEventListener('click', deleteSession);
+      document.getElementById('add-exercise-btn').addEventListener('click', addExercise);
+
+      document.querySelectorAll('.intensity-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.intensity-btn').forEach(b => b.classList.remove('border-primary', 'bg-primary/10'));
+          e.currentTarget.classList.add('border-primary', 'bg-primary/10');
+          document.getElementById('session-intensity').value = e.currentTarget.dataset.intensity;
+        });
+      });
+
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.filter-btn').forEach(b => {
+            b.classList.remove('bg-primary', 'text-white');
+            b.classList.add('bg-dark-card', 'text-dark-muted');
+          });
+          e.currentTarget.classList.remove('bg-dark-card', 'text-dark-muted');
+          e.currentTarget.classList.add('bg-primary', 'text-white');
+          currentFilter = e.currentTarget.dataset.filter;
+          renderSessions();
+        });
+      });
+
+      document.getElementById('session-form').addEventListener('submit', saveSession);
+    }
+
+    function openModal(sessionId = null) {
+      const modal = document.getElementById('session-modal');
+      const form = document.getElementById('session-form');
+      const deleteBtn = document.getElementById('delete-session-btn');
+      const hiddenIdInput = document.getElementById('session-id');
+      
+      form.reset();
+      hiddenIdInput.value = '';
+      document.getElementById('modal-title').textContent = 'Nouvelle séance';
+      deleteBtn.classList.add('hidden');
+      document.getElementById('exercises-list').innerHTML = '';
+      
+      document.getElementById('session-date').value = new Date().toISOString().split('T')[0];
+      
+      document.querySelectorAll('.intensity-btn').forEach(b => b.classList.remove('border-primary', 'bg-primary/10'));
+      document.querySelector('[data-intensity="3"]').classList.add('border-primary', 'bg-primary/10');
+      document.getElementById('session-intensity').value = '3';
+
+      if (sessionId) {
+        const session = allSessions.find(s => s.id === sessionId);
+        if (session) {
+          document.getElementById('modal-title').textContent = 'Modifier la séance';
+          hiddenIdInput.value = session.id;
+          document.getElementById('session-type').value = session.type;
+          document.getElementById('session-date').value = session.session_date;
+          document.getElementById('session-duration').value = session.duration_minutes || '';
+          document.getElementById('session-notes').value = session.notes || '';
+          document.getElementById('session-intensity').value = session.intensity || 3;
+          
+          document.querySelectorAll('.intensity-btn').forEach(b => {
+            b.classList.remove('border-primary', 'bg-primary/10');
+            if (parseInt(b.dataset.intensity) === session.intensity) {
+              b.classList.add('border-primary', 'bg-primary/10');
+            }
+          });
+          
+          if (session.exercises && session.exercises.length > 0) {
+            session.exercises.forEach(ex => addExercise(ex));
+          }
+          
+          deleteBtn.classList.remove('hidden');
+        }
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('session-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function addExercise(exerciseData = null) {
+      const exercisesList = document.getElementById('exercises-list');
+      const exerciseId = Date.now();
+      
+      const exerciseDiv = document.createElement('div');
+      exerciseDiv.className = 'bg-dark-bg border border-dark-border rounded-lg p-3';
+      exerciseDiv.dataset.exerciseId = exerciseId;
+      
+      exerciseDiv.innerHTML = `
+        <div class="flex justify-between items-center mb-2">
+          <input type="text" class="exercise-name flex-1 bg-transparent border-none focus:outline-none font-medium" placeholder="Nom de l'exercice" value="${exerciseData?.name || ''}">
+          <button type="button" class="remove-exercise text-red-400 hover:text-red-300 ml-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+        <div class="flex gap-2">
+          <input type="number" class="exercise-sets w-20 bg-dark-card border border-dark-border rounded px-2 py-1 text-sm" placeholder="Séries" value="${exerciseData?.sets?.length || ''}">
+          <input type="number" class="exercise-reps w-20 bg-dark-card border border-dark-border rounded px-2 py-1 text-sm" placeholder="Reps" value="${exerciseData?.sets?.[0]?.reps || ''}">
+          <input type="number" class="exercise-weight w-24 bg-dark-card border border-dark-border rounded px-2 py-1 text-sm" placeholder="Poids (kg)" value="${exerciseData?.sets?.[0]?.weight || ''}">
+        </div>
+      `;
+      
+      exercisesList.appendChild(exerciseDiv);
+      
+      exerciseDiv.querySelector('.remove-exercise').addEventListener('click', () => {
+        exerciseDiv.remove();
+      });
+    }
+
+    async function saveSession(e) {
+      e.preventDefault();
+      console.log('💾 Sauvegarde séance...');
+      
+      const id = document.getElementById('session-id').value;
+      const type = document.getElementById('session-type').value;
+      const sessionDate = document.getElementById('session-date').value;
+      const duration = parseInt(document.getElementById('session-duration').value) || 0;
+      const intensity = parseInt(document.getElementById('session-intensity').value) || 3;
+      const notes = document.getElementById('session-notes').value;
+      
+      const exercises = [];
+      document.querySelectorAll('[data-exercise-id]').forEach(exDiv => {
+        const name = exDiv.querySelector('.exercise-name').value;
+        const setsCount = parseInt(exDiv.querySelector('.exercise-sets').value) || 1;
+        const reps = parseInt(exDiv.querySelector('.exercise-reps').value) || 0;
+        const weight = parseFloat(exDiv.querySelector('.exercise-weight').value) || 0;
+        
+        if (name) {
+          const sets = Array.from({length: setsCount}, () => ({ reps, weight }));
+          exercises.push({ name, sets });
+        }
+      });
+
+      const sessionData = {
+        type,
+        session_date: sessionDate,
+        duration_minutes: duration,
+        intensity,
+        notes,
+        exercises: exercises.length > 0 ? exercises : [],
+      };
+
+      let error;
+      
+      if (id) {
+        console.log('🔄 Mise à jour séance ID:', id);
+        const res = await supabaseClient
+          .from('sport_sessions')
+          .update(sessionData)
+          .eq('id', id);
+        error = res.error;
+      } else {
+        console.log('➕ Création nouvelle séance');
+        sessionData.user_id = currentUser.id;
+        const res = await supabaseClient
+          .from('sport_sessions')
+          .insert(sessionData);
+        error = res.error;
+      }
+
+      if (error) {
+        console.error('Erreur Supabase:', error);
+        alert('Erreur: ' + error.message);
+      } else {
+        console.log('✅ Sauvegarde réussie');
+        closeModal();
+        await loadSessions();
+      }
+    }
+
+    async function deleteSession() {
+      const id = document.getElementById('session-id').value;
+      if (!id) return;
+
+      if (!confirm('Supprimer cette séance définitivement ?')) return;
+
+      const { error } = await supabaseClient.from('sport_sessions').delete().eq('id', id);
+
+      if (error) {
+        alert('Erreur: ' + error.message);
+      } else {
+        closeModal();
+        await loadSessions();
+      }
+    }
+  </script>
+</body>
+</html>
